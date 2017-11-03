@@ -1,0 +1,20 @@
+<div ng-controller="Watchword">
+    <div class="container">
+        <h1>Watchword</h1>
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <input ng-attr-type="{{ (visibleWW) ? 'text' : 'password'}}" data-toggle="password" ng-model="watchword" class="form-control"
+                        id="watchword" readonly>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" ng-mousedown="showW(1)" ng-mouseleave="showW(0)" ng-mouseup="showW(0)" ng-touchstart="showW(1)"
+                            ng-touchend="showW(0)">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary center-block">Continue</button>
+        </form>
+    </div>
+</div>
+<!-- -->

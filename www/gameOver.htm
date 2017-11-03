@@ -1,0 +1,10 @@
+<div ng-controller="GameOver">
+    <div class="container-fluid">
+        <h1>Winners!!</h1>
+        <img ng-show="winner == 'villager' " src="img/villager.jpg" style="width: 100%;">
+        <img ng-show="winner == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
+        {{winner}}
+        <button type="submit" ng-click="gotoSetup()" class="btn btn-warning btn-primary btn-block">Play again!</button>
+    </div>
+</div>
+<!--  center-block -->

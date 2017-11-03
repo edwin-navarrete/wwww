@@ -1,0 +1,24 @@
+{
+  "name": "werewolf_watchword",
+  "version": "1.0.0",
+  "description": "Werewolf game with skyfall flavor",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "lodash": "^4.17.4",
+    "ngtouch": "^1.0.1",
+    "ngtouchstart": "^1.0.1",
+    "randomstring": "^1.1.5",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "jasmine": "^2.8.0"
+  },
+  "scripts": {
+    "test": "jasmine",
+    "start": "node server.js"
+  },
+  "author": "Edwin Navarrete",
+  "license": "ISC"
+}

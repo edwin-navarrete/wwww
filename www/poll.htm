@@ -1,0 +1,33 @@
+<style>
+    .bitten {
+        color: aquamarine
+    }
+</style>
+<div ng-controller="Poll">
+    <div class="container">
+        <ng-form name="poolFrm">
+            <div class="container-fluid">
+                <h2>Judge!</h2>
+                <div class="btn-group-vertical btn-block pre-scrollable">
+                    <button ng-repeat="p in players" type="button" ng-click="select(p)" ng-class="{'btn-primary':!isChosen(p), 'btn-warning':isChosen(p), 'btn-danger':p.killed, 'bitten': p.bitten}"
+                        class="btn btn-lg">
+                        <i ng-if="isChosen(p)" class="fa fa-hand-o-right" aria-hidden="true"></i> {{p.name}}</button>
+                </div>
+                <button type="button" ng-click="sendVote()" class="btn btn-lg btn-danger btn-block">Condemn!</button>
+                <div ng-if="chosen && chosen.length">
+                    <h2>Casualties</h2>
+                    <div class="btn-group-vertical btn-block pre-scrollable">
+                        <button ng-repeat="p in chosen" type="button" ng-click="select(p)" class="btn btn-lg btn-danger">
+                            <span>&#x2670;</span> {{p.name}}</button>
+                    </div>
+                    <button type="button" ng-click="letsContinue()" class="btn btn-lg btn-primary btn-block">Continue..</button>
+                </div>
+            </div>
+
+        </ng-form>
+        <p>{{error}}</p>
+        <p ng-if="waiting">Yet waiting for {{waiting}}</p>
+        <p ng-if="waiting == 0">Wait for the results!</p>
+    </div>
+</div>
+<!--  center-block -->

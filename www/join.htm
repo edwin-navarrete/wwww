@@ -1,0 +1,34 @@
+<div ng-controller="Join">
+    <div class="container">
+        <ng-form name="joinFrm">
+            <div class="form-group">
+                <input type="text" ng-disabled="joined" required placeholder="Enter your name!" ng-model="name" class="form-control" id="name">
+            </div>
+            <div class="text-center">
+                <button type="submit" ng-hide="joined || !joinFrm.$valid" ng-click="joinNow()" class="btn btn-lg btn-primary">Join!</button>
+                <div class="btn-group " role="group">
+                    <button type="submit" ng-click="readWW()" ng-show="myself().role && !myself().watchword" class="btn btn-primary">Read Watchword</button>
+                    <button class="btn btn-primary" type="button" ng-mousedown="showRole(1)" ng-mouseleave="showRole(0)" ng-mouseup="showRole(0)"
+                        ng-touchstart="showRole(1)" ng-show="myself().role" ng-touchend="showRole(0)"> Reveal Role </button>
+                </div>
+                <img ng-show="visibleRole && myself().role == 'villager' " src="img/villager.jpg" style="width: 100%;">
+                <img ng-show="visibleRole && myself().role == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
+                <img ng-hide="visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
+                <img ng-show="!visibleRole && myself().killed" src="img/death.png" style="width: 100%;">
+                <div class="input-group" ng-show="myself().watchword">
+                    <input ng-attr-type="{{ (visibleWW) ? 'text' : 'password'}}" data-toggle="password" ng-model="myself().watchword" class="form-control"
+                        id="watchword" readonly>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" ng-mousedown="showW(1)" ng-mouseleave="showW(0)" ng-mouseup="showW(0)" ng-touchstart="showW(1)"
+                            ng-touchend="showW(0)">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                </div>
+            </div>
+        </ng-form>
+        <p>{{error}}</p>
+        <p ng-if="waiting !== undefined">Yet waiting for {{waiting}}</p>
+        <p ng-if="waiting === 0">Wait for the result!</p>
+    </div>
+</div>
+<!--  center-block -->
