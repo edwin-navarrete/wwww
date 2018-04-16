@@ -1,17 +1,53 @@
 describe("WereWord", function() {
   var Game = require('../../game.js');
   var game;
-
+  var setup = {
+    players: 9,
+    watchwords: ['A', 'E', 'B', 'C', 'A', 'D', 'E'],
+    wwtimeout: 10,
+    auto: true,
+  };
   beforeEach(function() {
-    player = new Game();
+    game = new Game();
   });
 
-  it("should be able to play a Song", function() {
-    player.play(song);
-    expect(player.currentlyPlayingSong).toEqual(song);
+  it("rejects invalid setup", function() {
+    function bindSetup(setupOveride) {
+      return ((setup) => game.setup(setup)).bind(setupGame, Object.assign(setup, setupOveride));
+    }
+    // missing players
+    expect(bindSetup({ players: 0 }).toThrow('players required');
+    // insufficient players
+    expect(bindSetup({ players: 3 })).toThrow('insufficient players');
+    // invalid watchword
+    expect(bindSetup({ watchwords: 'bla' })).toThrow('watchwords required');
+  });
 
-    //demonstrates use of custom matcher
-    expect(player).toBePlaying(song);
+  it("manages watchwords", function() {
+    game.setup(setup)
+    // removes duplicates?
+    expect(game.watchwords.length).toBe(5);
+    // choose watchword?
+    expect(game.watchwords.indexOf(game.watchword)).toBeGreaterThan(-1)
+    // werewolf cannot see watchword?
+    game.players.forEach((p) => {
+      var ww = game.watchword(p).watchword
+      if (p.role == 'werewolf') {
+        expect(game.watchwords.indexOf(ww)).toBe(-1)
+      }
+    })
+  });
+
+  it("detects correct number of joins", function() {
+  });
+
+  it("allows to vote everyone", function() {
+  });
+
+  it("allows win werewolfs", function() {
+  });
+
+  it("allows win villagers", function() {
   });
 
   /*     hggw1

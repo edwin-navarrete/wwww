@@ -59,11 +59,17 @@ function gameOver(players) {
 Game.prototype.setup = function(setup) {
   const playersCnt = Number(setup.players);
   if (!playersCnt) throw "players required";
-
+  if (playersCnt < 4) throw "insufficient players";
   // watchwords
   const watchwords = setup.watchwords;
   if (!Array.isArray(watchwords) || !watchwords.length)
     throw "watchwords required";
+
+  // remove duplicates
+  var uniqWW = {}
+  watchwords.forEach((w) => uniqWW[w.toLowerCase()] = 1);
+  watchwords = Object.keys(uniqWW);
+
   this.wwtimeout = Math.max(10, Number(setup.wwtimeout) || 0)
   this.limit = playersCnt
   this.players = []
@@ -145,12 +151,12 @@ Game.prototype.watchword = function(player) {
   if (!found.length) throw ("player not found");
 
   if (found[0].role == "werewolf") {
-    return res.end(JSON.stringify({
+    return {
       watchword: randomstring.generate({
         length: 20,
         charset: " abcdefghijk lmnopqrst uvwxyz"
       }).trim()
-    }));
+    };
   }
   found[0].peek = true
   let pendingPeek = this.players.reduce(

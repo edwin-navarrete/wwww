@@ -16,6 +16,12 @@
                 </div>
             </div>
             <div class="form-group">
+              <label class="col-xs-8" for="wwtimeout">Optional Category:</label>
+              <div class="col-xs-4">
+                  <select ng-model="watchwords" ng-options="categ for (categ, watchwords) in wwsamples" class="form-control" id="categ">
+              </div>
+          </div>
+          <div class="form-group">
                 <label class="col-xs-8" for="watchwords">Watchwords:</label>
                 <div class="col-xs-12">
                     <textarea ng-model="watchwords" ng-list="&#10;" ng-trim="false" class="form-control" rows="8" required></textarea>                    
