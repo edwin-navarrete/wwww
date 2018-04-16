@@ -9,7 +9,10 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.use(express.static('www'));
+const hostname = '127.0.0.1';
+const port = 80;
+
+app.use(express.static('dist'));
 // parse application/json 
 app.use(bodyParser.json())
 
@@ -301,7 +304,7 @@ app.post('/vote', function (req, res) {
     res.end(JSON.stringify({ chosen: chosen.id }));
 })
 
-var server = http.listen(80, function () {
+var server = http.listen(port, hostname, function () {
     var host = server.address().address
     var port = server.address().port
 
