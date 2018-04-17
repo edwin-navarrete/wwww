@@ -1,4 +1,12 @@
 var _ = require("lodash");
+var randomstring = require("randomstring");
+
+function cliErr(str) {
+  return {
+    code: 400,
+    msg: str
+  }
+}
 
 function Game(io) {
   this.io = io || { emit: () => null }
@@ -13,7 +21,7 @@ function Game(io) {
   this.wwtimeout = 10
 }
 
-function killing(players) {
+function execution(players) {
   if (players.some((p) => !p.chosen)) {
     console.error("Some players without vote")
     return {}
@@ -23,7 +31,7 @@ function killing(players) {
     .map((p) => p.role == 'werewolf' ? p.chosen : null)
     .filter((p) => p)
   let wwChosen = wwPrechosen.length ?
-    wwPrechosen.reduce(function(pre, cur) { return (pre === cur) ? pre : NaN; }) : NaN
+    wwPrechosen.reduce(function (pre, cur) { return (pre === cur) ? pre : NaN; }) : NaN
   // Villager's favorite
   let top = 0
   let topChosen = null
@@ -55,15 +63,22 @@ function gameOver(players) {
   if (villagers.length <= werewolfs.length + 1)
     return "werewolf";
 }
+Game.prototype.joinSkt = function (inf, socket) {
+  const found = game.players.filter((p) => p.id == inf.id)
+  if (!found.length) return;
+  player = found[0]
+  player.socket = socket.id;
+  (player.role == 'werewolf') && socket.join('werewolf')
+}
 
-Game.prototype.setup = function(setup) {
+Game.prototype.setup = function (setup) {
   const playersCnt = Number(setup.players);
-  if (!playersCnt) throw "players required";
-  if (playersCnt < 4) throw "insufficient players";
+  if (!playersCnt) throw cliErr("players required");
+  // if (playersCnt < 4) throw cliErr("insufficient players");
   // watchwords
-  const watchwords = setup.watchwords;
+  var watchwords = setup.watchwords;
   if (!Array.isArray(watchwords) || !watchwords.length)
-    throw "watchwords required";
+    throw cliErr("watchwords required");
 
   // remove duplicates
   var uniqWW = {}
@@ -87,33 +102,34 @@ Game.prototype.setup = function(setup) {
     auto: this.auto,
     wwtimeout: this.wwtimeout
   }
-  console.log("gameConfigured", gameconfig)
-  process.nextTick(() => io.emit("gameConfigured", gameconfig))
+  console.log("gameConfigured", this.setup)
+  process.nextTick(() => this.io.emit("gameConfigured", this.setup))
   return this.setup;
 };
 
-Game.prototype.join = function(join) {
+Game.prototype.join = function (toJoin) {
   if (this.remaining === 0)
     return "game locked";
 
   if (this.werewolfs < 0)
-    throw "invalid game";
+    throw cliErr("invalid game");
 
-  const name = (whois.name || "").trim()
-  if (!this.limit) throw "Game setup required";
-  if ((this.limit - this.players.length) <= 0) throw "Limit reached";
+  const name = (toJoin.name || "").trim()
+  if (!this.limit) throw cliErr("Game setup required");
+  if ((this.limit - this.players.length) <= 0) throw cliErr("Limit reached");
   if (!name) throw "Name required";
   const found = this.players.filter((p) => p.name == name)
-  if (found.length) throw "Duplicated name";
+  if (found.length) throw cliErr("Duplicated name");
 
   const newPlayer = {
     id: Math.floor(1e8 + Math.random() * 9e8),
-    name: whois.name
+    name: toJoin.name
   }
 
   this.players.push(newPlayer)
   this.remaining = this.limit - this.players.length
   console.log("gameWaiting" + this.remaining)
+  process.nextTick(() => this.io.emit("gameWaiting", { for: this.remaining }))
   if (this.remaining <= 0) {
     if (this.auto) {
       this.players.forEach((p) => p.role = "villager");
@@ -124,31 +140,51 @@ Game.prototype.join = function(join) {
       }
     }
     console.log("gameLocked")
+    process.nextTick(() => this.io.emit("gameLocked", { werewolfs: this.werewolfs }))
     this.remaining = 0
   }
   return newPlayer;
 }
 
-Game.prototype.whois = function(whois) {
-  const werewolf = Number(whois.id);
-  if (!werewolf) throw ("werewolf id required");
+Game.prototype.whois = function (whois) {
+  const id = Number(whois);
+  if (!id) throw cliErr("id required");
+  const found = this.players.filter((p) => p.id == id)
+  if (!found.length) {
+    console.log("cur players", this.players)
+    throw cliErr("not found:" + id);
+  }
+  return found[0];
+}
+
+/**
+ * Convert into werewolf a player 
+ * @param {Number} id 
+ */
+Game.prototype.setWerewolf = function (id) {
+  const werewolf = Number(id);
+  if (!werewolf) throw cliErr("werewolf id required");
   const found = this.players.filter((p) => p.id == werewolf)
-  if (!found.length) throw ("werewolf not found");
+  if (!found.length) throw cliErr("werewolf not found");
   if (!found[0].role == "werewolf") this.werewolfs--
   found[0].role = "werewolf"
 
-  if (this.werewolfs == 0) throw ("more werewolfs than expected");
+  if (this.werewolfs == 0) throw cliErr("more werewolfs than expected");
   return found;
 }
 
-Game.prototype.watchword = function(player) {
-  const aPlayer = Number(player.id);
-  if (this.werewolfs < 0 || !this.watchword) throw ("invalid game");
-  if (this.werewolfs > 0) throw ("Werewolf is missing");
-  if (!aPlayer) throw ("Player id required");
+/**
+ * Return the watchword for the given player (werewolf receives random text)
+ * @param {Number} player 
+ */
+Game.prototype.getWatchword = function (player) {
+  const aPlayer = Number(player);
+  if (this.werewolfs < 0 || !this.watchword) throw cliErr("invalid game");
+  if (this.werewolfs > 0) throw cliErr("Werewolf is missing");
+  if (!aPlayer) throw cliErr("Player id required");
 
   const found = this.players.filter((p) => p.id == aPlayer)
-  if (!found.length) throw ("player not found");
+  if (!found.length) throw cliErr("player not found");
 
   if (found[0].role == "werewolf") {
     return {
@@ -168,38 +204,49 @@ Game.prototype.watchword = function(player) {
       this.io.emit("gamePolling")
     }, this.wwtimeout * 1000)
   }
-  return this.watchword
+  return {
+    watchword: this.watchword
+  }
 }
 
-Game.prototype.players = function(player) {
+/**
+ * Return list of alive players 
+ */
+Game.prototype.getPlayers = function () {
   return this.players.filter((p) => !p.killed).map((p) => _.pick(p, ["id", "name"]))
 }
 
-Game.prototype.voteList = function() {
+/**
+ * List of chosen after voting
+ */
+Game.prototype.chosen = function () {
   const list = {}
   this.players.forEach((p) => p.chosen ? (list[chosen] = true) : null)
   return this.players.filter((p) => list[p.id])
 }
 
-Game.prototype.vote = function(vote) {
+/**
+ * adds a vote from player
+ */
+Game.prototype.vote = function (vote) {
   const voterId = Number(vote.id);
   const chosenId = Number(vote.chosen);
   let voter = this.players.filter((p) => p.id == voterId)
-  if (!voter.length) throw ("id not found");
+  if (!voter.length) throw cliErr("id not found");
   voter = voter[0]
   let chosen = this.players.filter((p) => p.id == chosenId)
-  if (!chosen.length) throw ("chosen not found");
+  if (!chosen.length) throw cliErr("chosen not found");
   chosen = chosen[0]
   voter.chosen = chosenId
-  if (this.werewolfs < 0 || !this.watchword) throw ("invalid game");
+  if (this.werewolfs < 0 || !this.watchword) throw cliErr("invalid game");
 
   const votesRemaining = this.players.reduce((prev, cur) => cur.chosen ? prev - 1 : prev, this.players.length)
   if (!votesRemaining) {
     // Voting ended
     setTimeout(() => {
-      const kill = killing(this.players)
+      const kill = execution(this.players)
       const won = gameOver(this.players)
-      //reset watchword after a killing
+      //reset watchword after a execution
       var i = Math.round(Math.random() * (this.watchwords.length - 1))
       this.watchword = String(this.watchwords[i]).toLowerCase()
       this.io.emit("gameKilling", { chosen: kill })
