@@ -1,5 +1,7 @@
 angular.module('Werewolf')
-  .controller('Setup', function($scope, $http, $timeout, $location, socket) {
+  .controller('Setup', function ($rootScope, $scope, $http, $timeout, $location, socket) {
+
+    $rootScope.waiting = null
     $scope.players = 3
     $scope.wwtimeout = 10
     $scope.wwsamples = {
@@ -16,20 +18,20 @@ angular.module('Werewolf')
     $scope.categs = Object.keys($scope.wwsamples);
     $scope.watchwords = ['Harry Potter', 'Piratas del Caribe', 'Avengers', 'Toy Story', 'El señor de los anillos', 'Mundo Jurásico', 'Star Wars', 'Frozen', 'Despicable Me', 'Buscando a Nemo', 'El Rey León', 'Shrek'];
     $scope.auto = true;
-    $scope.joinGame = function() {
+    $scope.joinGame = function () {
       $http.post("setup", {
         players: $scope.players,
         watchwords: $scope.watchwords,
         auto: $scope.auto,
         wwtimeout: $scope.wwtimeout
-      }).then(function(resp) {
+      }).then(function (resp) {
         $scope.werewolfs = resp.data
-      }).catch(function(err) {
+      }).catch(function (err) {
         $scope.error = err.data
       })
     };
     $scope.auto = true
-    $scope.$on('gameConfigured', function(ev, msg) {
-      $timeout(function() { $location.path('/join') })
+    $scope.$on('gameConfigured', function (ev, msg) {
+      $timeout(function () { $location.path('/join') })
     })
   });

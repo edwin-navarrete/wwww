@@ -36,6 +36,16 @@ angular.module('Werewolf')
                 $scope.error = err.data
             })
         }
+
+        $scope.$on('endPeek', function(ev, msg){
+            console.log('endPeek timer', msg)
+            $scope.timer = msg.timeout
+            var interval = setInterval(function () {
+              (--$scope.timer <= 0) && clearInterval(interval)
+              $scope.$digest()
+            }, 1000)
+        })
+
         $scope.$on('gamePolling', function (ev) {
             var myself = $rootScope.myself()
             myself.watchword = ""

@@ -9,12 +9,11 @@ import 'angular-toggle-switch'
 require('bootstrap/dist/css/bootstrap.css')
 require('angular-toggle-switch/angular-toggle-switch-bootstrap.css')
 require('bootstrap-toggle/css/bootstrap-toggle.min.css')
-
 const io = require('socket.io-client')
 const angular = require('angular')
 require('angular-route')
 require('ngtouch')
-require('angular-toggle-switch')  
+require('angular-toggle-switch')
 
 var app = angular.module('Werewolf', ["ngRoute", "ngTouch", "toggle-switch"]);
 app.config(function ($routeProvider) {
@@ -30,7 +29,7 @@ app.config(function ($routeProvider) {
     .when("/poll", {
       templateUrl: "poll.htm"
     })
-    .when("/gameOver", {
+    .when("/gameOver/:winner", {
       templateUrl: "gameOver.htm"
     })
 });
@@ -102,7 +101,12 @@ app.factory('socket', function ($rootScope, $window, $http, $location, $timeout)
     console.log("event gameWon:", msg)
     $rootScope.$broadcast("gameWon", msg)
   });
-
+  
+  fs_socket.on("endPeek", function (msg) {
+    console.log("event endPeek:", msg)
+    $rootScope.$broadcast("endPeek", msg)
+  });
+  
   fs_socket.on("gamePolling", function (msg) {
     console.log("event gamePolling:", msg)
     $timeout(function () {
@@ -117,11 +121,8 @@ app.factory('socket', function ($rootScope, $window, $http, $location, $timeout)
 
   fs_socket.on("gameOver", function (msg) {
     console.log("event gameOver:", msg)
-    $timeout(function () {
-      $location.path("/gameOver")
-      $timeout(function () {
-        $rootScope.$broadcast("gameOver", msg)
-      })
+    $timeout(function(){
+      $location.path("/gameOver/"+msg)
     })
   });
   return fs_socket;

@@ -1,7 +1,7 @@
 angular.module('Werewolf')
     .controller('Poll', function ($rootScope, $scope, $http, $timeout, $location, socket) {
         $scope.players = []
-
+        $rootScope.waiting = null
         if ($rootScope.myself().id) {
             $rootScope.whoIAm()
                 .then(function (myself) {
@@ -38,6 +38,7 @@ angular.module('Werewolf')
         }
 
         $scope.$on("gameKilling", function (ev, msg) { 
+            $scope.waitingVote = null
             $timeout(function(){
                 $scope.chosen = msg.chosen
                 var myId = $rootScope.myself().id
@@ -53,8 +54,11 @@ angular.module('Werewolf')
             console.info("WINNERS",msg) 
         })
 
+        $scope.waitingVote = null
         $scope.$on("gameVote", function (ev, msg) { 
-             $scope.waiting = msg.remaining
+            console.log('gameVote:',msg)
+            $scope.waitingVote = msg.remaining
+            $scope.$digest()
         })
 
         $http.get("players").then(function (resp) {

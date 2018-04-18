@@ -1,5 +1,5 @@
 angular.module('Werewolf')
-    .controller('GameOver', function ($scope, $rootScope, $http, $timeout, $location, socket) {
+    .controller('GameOver', function ($scope, $rootScope, $http, $timeout, $location, $routeParams, socket) {
         if ($rootScope.myself().id) {
             $rootScope.whoIAm()
                 .catch(function (err) {
@@ -7,12 +7,7 @@ angular.module('Werewolf')
                     $location.path("/setup")
                 })
         }
-
-        $scope.$on("gameOver", function (ev, winner) {
-            $timeout(function () {
-                $scope.winner = winner
-            })
-        })
+        $scope.winner = $routeParams.winner
         $scope.gotoSetup = function () {
             $location.path("/setup")
         }

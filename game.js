@@ -88,7 +88,8 @@ Game.prototype.setup = function (setup) {
   this.wwtimeout = Math.max(10, Number(setup.wwtimeout) || 0)
   this.limit = playersCnt
   this.players = []
-  this.watchwords = watchwords;
+  this.watchwords = watchwords
+  this.remaining = playersCnt
   var i = Math.round(Math.random() * (watchwords.length - 1))
   this.watchword = String(watchwords[i]).toLowerCase()
   if (playersCnt <= 8) this.werewolfs = 1
@@ -96,15 +97,15 @@ Game.prototype.setup = function (setup) {
   else if (playersCnt <= 15) this.werewolfs = 3
 
   this.auto = setup.auto
-  this.setup = {
+  this.config = {
     werewolf: this.werewolfs,
     limit: this.limit,
     auto: this.auto,
     wwtimeout: this.wwtimeout
   }
-  console.log("gameConfigured", this.setup)
-  process.nextTick(() => this.io.emit("gameConfigured", this.setup))
-  return this.setup;
+  console.log("gameConfigured", this.config)
+  process.nextTick(() => this.io.emit("gameConfigured", this.config))
+  return this.config;
 };
 
 Game.prototype.join = function (toJoin) {
@@ -198,6 +199,7 @@ Game.prototype.getWatchword = function (player) {
   let pendingPeek = this.players.reduce(
     (prev, cur) => cur.peek || cur.role == 'werewolf' || cur.killed ? prev - 1 : prev, this.limit)
   if (!pendingPeek) {
+    this.io.emit("endPeek", { timeout: this.wwtimeout })
     // Reset peek watchword and start poll after some timeout
     setTimeout(() => {
       this.players.forEach((p) => delete p.peek)

@@ -11,6 +11,10 @@
                     <button class="btn btn-primary" type="button" ng-mousedown="showRole(1)" ng-mouseleave="showRole(0)" ng-mouseup="showRole(0)"
                         ng-touchstart="showRole(1)" ng-show="myself().role" ng-touchend="showRole(0)"> Reveal Role </button>
                 </div>
+                <p ng-if="waiting">We are waiting for {{waiting}} more players to join</p>
+                <p ng-if="waiting === 0">Now read the secret watchword and discreetly see your role</p>
+                <p ng-if="timer"> read quick!, you only have {{timer}} more before voting begins.</p>
+                
                 <img ng-show="visibleRole && myself().role == 'villager' " src="img/villager.jpg" style="width: 100%;">
                 <img ng-show="visibleRole && myself().role == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
                 <img ng-hide="visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
@@ -27,8 +31,6 @@
             </div>
         </ng-form>
         <p>{{error}}</p>
-        <p ng-if="waiting !== undefined">Yet waiting for {{waiting}}</p>
-        <p ng-if="waiting === 0">Wait for the result!</p>
     </div>
 </div>
 <!--  center-block -->

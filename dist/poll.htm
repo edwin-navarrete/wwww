@@ -7,7 +7,7 @@
     <div class="container">
         <ng-form name="poolFrm">
             <div class="container-fluid">
-                <h2>Judge!</h2>
+                <h2>Now is time for you to judge and condemn someone!</h2>
                 <div class="btn-group-vertical btn-block pre-scrollable">
                     <button ng-repeat="p in players" type="button" ng-click="select(p)" ng-class="{'btn-primary':!isChosen(p), 'btn-warning':isChosen(p), 'btn-danger':p.killed, 'bitten': p.bitten}"
                         class="btn btn-lg">
@@ -26,8 +26,8 @@
 
         </ng-form>
         <p>{{error}}</p>
-        <p ng-if="waiting">Yet waiting for {{waiting}}</p>
-        <p ng-if="waiting == 0">Wait for the results!</p>
+        <p ng-if="waitingVote">Yet waiting for {{waitingVote}} to judge</p>
+        <p ng-if="waitingVote === 0"><i class="fa fa-spinner fa-spin"></i> Wait for the obituary!</p>
     </div>
 </div>
 <!--  center-block -->
