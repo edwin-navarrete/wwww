@@ -91,8 +91,10 @@ Game.prototype.setup = function (setup) {
   watchwords.forEach((w) => uniqWW[w.toLowerCase()] = 1);
   watchwords = Object.keys(uniqWW);
 
-  this.wwtimeout = Math.max(10, Number(setup.wwtimeout) || 0)
+  // TODO min 10s? Math.max(10, Number(setup.wwtimeout) || 0)
+  this.wwtimeout = Number(setup.wwtimeout) || 10
   this.killTimeout = Number(setup.killTimeout) || 3000
+  this.endTimeout = Number(setup.endTimeout) || 4000
 
   this.limit = playersCnt
   this.players = []
@@ -254,7 +256,8 @@ Game.prototype.vote = function (vote) {
   voter.chosen = chosenId
   if (this.werewolfs < 0 || !this.watchword) throw cliErr('invalidGame');
 
-  const votesRemaining = this.players.reduce((prev, cur) => cur.chosen ? prev - 1 : prev, this.players.length)
+  const alive = this.players.filter((p) => !p.killed)
+  const votesRemaining = this.players.reduce((prev, cur) => cur.chosen ? prev - 1 : prev, alive.length)
   if (!votesRemaining) {
     // Voting ended
     setTimeout(() => {
@@ -264,9 +267,13 @@ Game.prototype.vote = function (vote) {
       var i = Math.round(Math.random() * (this.watchwords.length - 1))
       this.watchword = String(this.watchwords[i]).toLowerCase()
       console.log('gameKilling', kill)
-      this.io.emit('gameKilling', { chosen: kill })
+      // all death excluding new deaths
+      let death = this.players.filter((p) => {
+        return p.killed && !kill.some((k) => k.id == p.id)
+      })
+      this.io.emit('gameKilling', { chosen: kill, death: death })
       if (won) {
-        setTimeout(() => this.io.emit('gameOver', won), 4000)
+        setTimeout(() => this.io.emit('gameOver', won), this.endTimeout)
       }
     }, this.killTimeout * 1000)
   }

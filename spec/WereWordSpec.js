@@ -34,8 +34,9 @@ describe("WereWord", function () {
   var baseSetup = {
     players: 8,
     watchwords: ['A', 'E', 'B', 'C', 'A', 'D', 'E'],
-    wwtimeout: 10,
+    wwtimeout: .2,
     killTimeout: .2,
+    endTimeout: .2,
     auto: true,
   };
 
@@ -70,24 +71,10 @@ describe("WereWord", function () {
     })
   });
 
-  it("handles joins and votes", function (done) {
+  it("handles votes", function (done) {
     game.setup(baseSetup)
     for (i = 0; i < baseSetup.players; i++)
       game.join({ name: 'Player' + i })
-    // detects correct number of joins
-    expect(() => game.join({ name: 'PlayerX' })).toThrow({ code: 400, msg: 'gameLocked' })
-    // Sends message when game is locked
-    server.once('gameLocked', (resp) => { 
-
-    })
-  })
-
-  it("handles joins and votes", function (done) {
-    game.setup(baseSetup)
-    for (i = 0; i < baseSetup.players; i++)
-      game.join({ name: 'Player' + i })
-    // detects correct number of joins
-    expect(() => game.join({ name: 'PlayerX' })).toThrow({ code: 400, msg: 'gameLocked' })
 
     // everyone knows his role
     var villagers = 0, werewolfs = 0, theWolf = 0
@@ -132,7 +119,67 @@ describe("WereWord", function () {
       expect(killed.indexOf(wwVote)).not.toBe(-1)
       done()
     })
-  });
+  })
+
+
+  it("handles joins", function (done) {
+    game.setup(baseSetup)
+    for (i = 0; i < baseSetup.players; i++)
+      game.join({ name: 'Player' + i })
+    // detects correct number of joins
+    expect(() => game.join({ name: 'PlayerX' })).toThrow({ code: 400, msg: 'gameLocked' })
+    // Sends message when game is locked
+    server.once('gameLocked', (resp) => {
+      done()
+    })
+  })
+
+  /**
+   * NOTE this test depends upon previous test
+   */
+  it("eventually game polling after villagers read Watchwords", function (done) {
+    //First get notified of endPeek
+    server.once('endPeek', () => server.once('gamePolling', done))
+    game.players.forEach((p) => p.role == 'villager' && game.getWatchword(p.id))
+  })
+
+  it("notifies gameOver when werewolf dies", function (done) {
+    // everyone kills the wolf
+    var theWolf = 0
+    game.players.forEach((p) => p.role == 'werewolf' && (theWolf = p.id))
+    game.players.forEach((p) => game.vote({ id: p.id, chosen: theWolf }))
+    server.once('gameKilling', (resp) => {
+      expect(resp.chosen.some((p) => p.role == 'werewolf')).toBeTruthy()
+      server.once('gameOver', (resp) => {
+        expect(resp).toBe('villager')
+        done()
+      })
+    })
+  })
+
+  it("notifies gameOver when werewolf wins", function (done) {
+    game.setup(baseSetup)
+    for (i = 0; i < baseSetup.players; i++)
+      game.join({ name: 'Player' + i });
+    //  the wolf survives
+    (function pollingRound() {
+      var villagers = game.players.filter((p) => p.role == 'villager' && !p.killed)
+      var alive = game.players.filter((p) => !p.killed)
+      alive.forEach((p) => game.vote({ id: p.id, chosen: villagers[Math.round(Math.random() * (villagers.length - 1))].id }))
+      server.once('gameKilling', (resp) => {
+        console.log(resp);
+        expect(resp.chosen.some((p) => p.role == 'werewolf')).toBeFalsy()
+        if (villagers.length > 2)
+          pollingRound()
+        else {
+          server.once('gameOver', (resp) => {
+            expect(resp).toBe('werewolf')
+            done()
+          })
+        }
+      })
+    })();
+  })
 
   describe("internals", function () {
     it("werewolfs kills only when they agreed", function () {
