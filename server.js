@@ -20,10 +20,12 @@ var game = new Game(io)
 
 io.on('connection', function (socket) {
     console.log('a user connected');
+    // FIXME implement join of players for multi werewolf game
     socket.on('join', function (inf) {
         game.joinSkt(inf, socket)
     });
     socket.on('disconnect', function () {
+        game.removeSkt(socket)
         console.log('user disconnected');
     });
 });

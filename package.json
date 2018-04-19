@@ -11,7 +11,7 @@
     "bootstrap": "^4.1.0",
     "bootstrap-toggle": "^2.2.2",
     "express": "^4.16.2",
-    "lodash": "^4.17.4",
+    "lodash": "^3.10.1",
     "ngtouch": "^1.0.1",
     "ngtouchstart": "^1.0.1",
     "randomstring": "^1.1.5",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "css-loader": "^0.28.11",
     "jasmine": "^2.8.0",
+    "mocket-io": "^0.2.3",
     "ng-annotate-loader": "^0.6.1",
     "style-loader": "^0.20.3",
     "webpack": "^4.5.0",
