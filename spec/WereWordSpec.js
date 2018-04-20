@@ -46,14 +46,14 @@ describe("WereWord", function () {
   it("rejects invalid setup", function () {
     function bindSetup(setupOveride) {
       var newSetup = Object.assign({}, baseSetup, setupOveride)
-      return game.setup.bind(game, newSetup);
+      return game.setup.bind(game, newSetup); 
     }
     // missing players
-    expect(bindSetup({ players: 0 })).toThrow({ code: 400, msg: 'playersReq' })
+    expect(bindSetup({ players: 0 })).toThrow(new Error('playersReq'))
     // insuffPlayers
-    expect(bindSetup({ players: 3 })).toThrow({ code: 400, msg: 'insuffPlayers' })
+    expect(bindSetup({ players: 3 })).toThrow(new Error('insuffPlayers'))
     // invalid watchword
-    expect(bindSetup({ watchwords: 'bla' })).toThrow({ code: 400, msg: 'watchwordsReq' })
+    expect(bindSetup({ watchwords: 'bla' })).toThrow(new Error('watchwordsReq'))
   });
 
   it("manages watchwords", function () {
@@ -127,7 +127,7 @@ describe("WereWord", function () {
     for (i = 0; i < baseSetup.players; i++)
       game.join({ name: 'Player' + i })
     // detects correct number of joins
-    expect(() => game.join({ name: 'PlayerX' })).toThrow({ code: 400, msg: 'gameLocked' })
+    expect(() => game.join({ name: 'PlayerX' })).toThrow(new Error('gameLocked'))
     // Sends message when game is locked
     server.once('gameLocked', (resp) => {
       done()

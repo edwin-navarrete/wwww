@@ -1,11 +1,11 @@
 var _ = require('lodash');
 var randomstring = require('randomstring');
 
-function cliErr(str) {
-  return {
-    code: 400,
-    msg: str
-  }
+function cliErr(str, inf) {
+  console.warn('Client ERROR:' + str, inf)
+  var err = new Error(str)
+  err.code = 400
+  return err
 }
 
 function Game(io) {
@@ -100,7 +100,6 @@ Game.prototype.setup = function (setup) {
   this.limit = playersCnt
   this.players = []
   this.watchwords = watchwords
-  this.remaining = playersCnt
   var i = Math.round(Math.random() * (watchwords.length - 1))
   this.watchword = String(watchwords[i]).toLowerCase()
   // FIXME currently more than one werewolf is not supported yet
@@ -122,15 +121,13 @@ Game.prototype.setup = function (setup) {
 };
 
 Game.prototype.join = function (toJoin) {
-  if (this.remaining === 0)
-    throw cliErr('gameLocked');
-
   if (this.werewolfs < 0)
     throw cliErr('invalidGame');
 
   const name = (toJoin.name || '').trim()
   if (!this.limit) throw cliErr('invalidGame');
-  if ((this.limit - this.players.length) <= 0) throw cliErr('gameLocked');
+  const remaining = this.limit - this.players.length - 1
+  if (remaining < 0) throw cliErr('gameLocked');
   if (!name) throw cliErr('nameReq');
   const found = this.players.filter((p) => p.name == name)
   if (found.length) throw cliErr('dupName');
@@ -141,11 +138,11 @@ Game.prototype.join = function (toJoin) {
   }
 
   this.players.push(newPlayer)
-  this.remaining = this.limit - this.players.length
-  console.log('gameWaiting' + this.remaining)
-  process.nextTick(() => this.io.emit('gameWaiting', { for: this.remaining }))
-  if (this.remaining <= 0) {
+  console.log('gameWaiting' + remaining)
+  process.nextTick(() => this.io.emit('gameWaiting', { for: remaining }))
+  if (remaining <= 0) {
     if (this.auto) {
+      // Select the werewolfs randomly
       this.players.forEach((p) => p.role = 'villager');
       while (this.werewolfs > 0) {
         var i = Math.round(Math.random() * (this.players.length - 1))
@@ -155,7 +152,6 @@ Game.prototype.join = function (toJoin) {
     }
     console.log('gameLocked')
     process.nextTick(() => this.io.emit('gameLocked', { werewolfs: this.werewolfs }))
-    this.remaining = 0
   }
   return newPlayer;
 }
@@ -252,7 +248,7 @@ Game.prototype.vote = function (vote) {
   voter = voter[0]
   if (voter.killed) throw cliErr('isDeath');
   let chosen = this.players.filter((p) => p.id == chosenId)
-  if (!chosen.length) throw cliErr('chosenNotFound');
+  if (!chosen.length) throw cliErr('chosenNotFound', chosenId);
   chosen = chosen[0]
   voter.chosen = chosenId
   if (this.werewolfs < 0 || !this.watchword) throw cliErr('invalidGame');
