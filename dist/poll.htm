@@ -7,27 +7,29 @@
     <div class="container">
         <ng-form name="poolFrm">
             <div class="container-fluid">
-                <h2>Now is time for you to judge and condemn someone!</h2>
+                <h2>{{ 'judgeHdr' | translate }}</h2>
                 <div class="btn-group-vertical btn-block pre-scrollable">
                     <button ng-repeat="p in players" type="button" ng-click="select(p)" ng-class="{'btn-primary':!isChosen(p), 'btn-warning':isChosen(p), 'btn-danger':p.killed, 'bitten': p.bitten}"
                         class="btn btn-lg">
                         <i ng-if="isChosen(p)" class="fa fa-hand-o-right" aria-hidden="true"></i> {{p.name}}</button>
                 </div>
-                <button type="button" ng-click="sendVote()" class="btn btn-lg btn-danger btn-block">Condemn!</button>
+                <button type="button" ng-click="sendVote()" class="btn btn-lg btn-danger btn-block">{{ 'judgeBtn' | translate }}</button>
                 <div ng-if="chosen && chosen.length">
-                    <h2>Casualties</h2>
+                    <h2>{{ 'deathHdr' | translate }}</h2>
                     <div class="btn-group-vertical btn-block pre-scrollable">
-                        <button ng-repeat="p in chosen" type="button" ng-click="select(p)" class="btn btn-lg btn-danger">
+                        <button ng-repeat="p in chosen" type="button" ng-click="select(p)" 
+                        ng-class="{'btn-danger': p.justKilled}" class="btn btn-lg">
                             <span>&#x2670;</span> {{p.name}}</button>
                     </div>
-                    <button type="button" ng-click="letsContinue()" class="btn btn-lg btn-primary btn-block">Continue..</button>
+                    <button type="button" ng-click="letsContinue()" class="btn btn-lg btn-primary btn-block">{{ 'continueBtn' | translate }}</button>
                 </div>
             </div>
 
         </ng-form>
         <p>{{error}}</p>
-        <p ng-if="waitingVote">Yet waiting for {{waitingVote}} to judge</p>
-        <p ng-if="waitingVote === 0"><i class="fa fa-spinner fa-spin"></i> Wait for the obituary!</p>
+        <p ng-if="waitingVote">{{ 'judgingHint' | translate | sprintf:(waitingVote) }}</p>
+        <p ng-if="waitingVote === 0">
+            <i class="fa fa-spinner fa-spin"></i>{{ 'obituaryHint' | translate }}</p>
     </div>
 </div>
 <!--  center-block -->

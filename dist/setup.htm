@@ -2,30 +2,28 @@
     <div class="container">
         <img src="img/werewolfwatchword.png" style="width: 100%;">
         <hr>
-        <p>{{timer}}</p>
-        <!-- <timer end-time="{{timer}}" interval="1000" language="es" >{{secondUnit}}</timer>-->
         <form class="form-horizontal">
             <div class="form-group">
-                <label class="col-xs-8" for="players">Number of players:</label>
+                <label class="col-xs-8" for="players">{{ 'playersLbl' | translate }}</label>
                 <div class="col-xs-4">
                     <input ng-model="players" type="number" required class="form-control" id="players">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-xs-8" for="wwtimeout">Watchword timeout:</label>
+                <label class="col-xs-8" for="wwtimeout">{{ 'wwtimeoutLbl' | translate }}</label>
                 <div class="col-xs-4">
                     <input ng-model="wwtimeout" type="number" required class="form-control" id="wwtimeout">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-xs-8" for="categ">Optional Category:</label>
+                <label class="col-xs-8" for="categ">{{ 'categLbl' | translate }}</label>
                 <div class="col-xs-4">
                     <select ng-model="watchwords" ng-options="categ for (categ, watchwords) in wwsamples" class="form-control" id="categ">
                     </select>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-xs-8" for="watchwords">Watchwords:</label>
+                <label class="col-xs-8" for="watchwords">{{ 'wwrdLbl' | translate }}</label>
                 <div class="col-xs-12">
                     <textarea ng-model="watchwords" ng-list="&#10;" ng-trim="false" class="form-control" rows="8" required></textarea>
                 </div>
@@ -40,7 +38,7 @@
              -->
 
             <p>{{error}}</p>
-            <button type="submit" class="btn btn-primary btn-lg center-block" ng-click="joinGame()">Setup a New Game</button>
+            <button type="submit" class="btn btn-primary btn-lg center-block" ng-click="joinGame()">{{ 'setupBtn' | translate }}</button>
         </form>
     </div>
 </div>

@@ -2,7 +2,7 @@ angular.module('Werewolf')
   .controller('Setup', function ($rootScope, $scope, $http, $timeout, $location, socket) {
 
     $rootScope.waiting = null
-    $scope.players = 3
+    $scope.players = 4
     $scope.wwtimeout = 10
     $scope.wwsamples = {
       'frutas': ['banano', 'cereza', 'fresa', 'kiwi', 'limón', 'mandarina', 'manzana', 'naranja', 'pera', 'piña', 'uva', 'durazno'],

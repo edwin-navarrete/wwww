@@ -2,23 +2,19 @@
     <div class="container">
         <ng-form name="joinFrm">
             <div class="form-group">
-                <input type="text" ng-disabled="joined" required placeholder="Enter your name!" ng-model="name" class="form-control" id="name">
+                <input type="text" ng-disabled="joined" required placeholder="{{ 'nameHld' | translate }}" ng-model="name" class="form-control" id="name">
             </div>
             <div class="text-center">
-                <button type="submit" ng-hide="joined || !joinFrm.$valid" ng-click="joinNow()" class="btn btn-lg btn-primary">Join!</button>
-                <div class="btn-group " role="group">
-                    <button type="submit" ng-click="readWW()" ng-show="myself().role && !myself().watchword" class="btn btn-primary">Read Watchword</button>
-                    <button class="btn btn-primary" type="button" ng-mousedown="showRole(1)" ng-mouseleave="showRole(0)" ng-mouseup="showRole(0)"
-                        ng-touchstart="showRole(1)" ng-show="myself().role" ng-touchend="showRole(0)"> Reveal Role </button>
-                </div>
-                <p ng-if="waiting">We are waiting for {{waiting}} more players to join</p>
-                <p ng-if="waiting === 0">Now read the secret watchword and discreetly see your role</p>
-                <p ng-if="timer"> read quick!, you only have {{timer}} more before voting begins.</p>
+                <button type="submit" ng-hide="joined || !joinFrm.$valid" ng-click="joinNow()" class="btn btn-lg btn-primary">{{ 'joinBtn' | translate }}</button>
+                <p ng-if="waiting">{{ 'waitingPlayers' | translate | sprintf:(waiting) }}</p>
+                <p ng-if="waiting === 0">{{ 'waitingHint' | translate }}</p>
+                <p ng-if="myself().killed">{{ 'deathHint' | translate }}</p>
                 
-                <img ng-show="visibleRole && myself().role == 'villager' " src="img/villager.jpg" style="width: 100%;">
-                <img ng-show="visibleRole && myself().role == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
-                <img ng-hide="visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
-                <img ng-show="!visibleRole && myself().killed" src="img/death.png" style="width: 100%;">
+                <div class="btn-group " role="group">
+                    <button type="submit" ng-click="readWW()" ng-show="myself().role && !myself().watchword" class="btn btn-primary">{{ 'watchwordBtn' | translate }}</button>
+                    <button class="btn btn-primary" type="button" ng-mousedown="showRole(1)" ng-mouseleave="showRole(0)" ng-mouseup="showRole(0)"
+                        ng-touchstart="showRole(1)" ng-show="myself().role" ng-touchend="showRole(0)">{{ 'roleBtn' | translate }}</button>
+                </div>
                 <div class="input-group" ng-show="myself().watchword">
                     <input ng-attr-type="{{ (visibleWW) ? 'text' : 'password'}}" data-toggle="password" ng-model="myself().watchword" class="form-control"
                         id="watchword" readonly>
@@ -27,7 +23,12 @@
                             ng-touchend="showW(0)">
                             <i class="fa fa-eye"></i>
                         </button>
-                </div>
+                </div>                
+                <img ng-show="visibleRole && myself().role == 'villager' " src="img/villager.jpg" style="width: 100%;">
+                <img ng-show="visibleRole && myself().role == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
+                <img ng-hide="visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
+                <img ng-show="!visibleRole && myself().killed" src="img/death.png" style="width: 100%;">
+
             </div>
         </ng-form>
         <p>{{error}}</p>

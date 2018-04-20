@@ -1,6 +1,9 @@
 angular.module('Werewolf')
     .controller('Poll', function ($rootScope, $scope, $http, $timeout, $location, socket) {
         $scope.players = []
+        const myself = $rootScope.myself()
+        $rootScope.myself(Object.assign(myself, { watchword: null }))
+
         $rootScope.waiting = null
         if ($rootScope.myself().id) {
             $rootScope.whoIAm()
@@ -26,7 +29,7 @@ angular.module('Werewolf')
             } // */
         }
 
-        $scope.letsContinue= function(){
+        $scope.letsContinue = function () {
             $location.path("/join")
         }
 
@@ -37,26 +40,32 @@ angular.module('Werewolf')
                 })
         }
 
-        $scope.$on("gameKilling", function (ev, msg) { 
+        $scope.$on("gameKilling", function (ev, msg) {
             $scope.waitingVote = null
-            $timeout(function(){
+            $timeout(function () {
                 $scope.chosen = msg.chosen
+                $scope.chosen.forEach(function (k) {
+                    k.justKilled = true
+                });
+                if (msg.death) {
+                    $scope.chosen = $scope.chosen.concat(msg.death)
+                }
                 var myId = $rootScope.myself().id
-                var killedMe = msg.chosen.filter(function(p){
+                var killedMe = msg.chosen.filter(function (p) {
                     return p.id == myId
                 })
-                if(killedMe.length)
+                if (killedMe.length)
                     $location.path("/join")
             })
         })
 
-        $scope.$on("gameOver", function (ev, msg) { 
-            console.info("WINNERS",msg) 
+        $scope.$on("gameOver", function (ev, msg) {
+            console.info("WINNERS", msg)
         })
 
         $scope.waitingVote = null
-        $scope.$on("gameVote", function (ev, msg) { 
-            console.log('gameVote:',msg)
+        $scope.$on("gameVote", function (ev, msg) {
+            console.log('gameVote:', msg)
             $scope.waitingVote = msg.remaining
             $scope.$digest()
         })

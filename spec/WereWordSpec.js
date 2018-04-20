@@ -216,7 +216,7 @@ describe("WereWord", function () {
 
     it("gameOver conditions", function () {
       // one of three werewolfs vote for different person
-      var players = [
+      let players = [
         { id: 10, role: 'werewolf', killed: true },
         { id: 11, role: 'werewolf', killed: true },
         { id: 12, role: 'villager' },
@@ -227,7 +227,7 @@ describe("WereWord", function () {
       expect(won).toBe('villager');
 
       // werewolfs majority
-      var players = [
+      players = [
         { id: 10, role: 'werewolf', killed: true },
         { id: 11, role: 'werewolf' },
         { id: 12, role: 'villager' },
@@ -239,6 +239,13 @@ describe("WereWord", function () {
       won = Game.gameOver(players)
       // werewolf win 
       expect(won).toBe('werewolf');
+
+      players = [{ "id": 984772605, "name": "A", "role": "villager", "killed": true },
+      { "id": 412502799, "name": "B", "role": "villager" },
+      { "id": 175036163, "name": "C", "role": "werewolf" },
+      { "id": 735900258, "name": "D", "role": "villager" }]
+      won = Game.gameOver(players)
+      expect(won).toBeNull()
     })
   })
 

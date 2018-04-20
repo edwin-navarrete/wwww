@@ -50,7 +50,8 @@ angular.module('Werewolf')
             var myself = $rootScope.myself()
             myself.watchword = ""
             $rootScope.myself(myself)
-            $location.path("/poll")
+            if(!myself.killed)
+                $location.path("/poll")
         });
 
         $scope.visibleWW = false

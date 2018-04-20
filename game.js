@@ -61,8 +61,9 @@ Game.gameOver = function (players) {
     return 'villager';
   // Alive werewolfs are equal or superior to villagers
   const villagers = players.filter((p) => !p.killed && p.role != 'werewolf')
-  if (villagers.length <= werewolfs.length + 1)
+  if (villagers.length <= werewolfs.length)
     return 'werewolf';
+  return null;
 }
 
 Game.prototype.joinSkt = function (inf, socket) {
@@ -93,8 +94,8 @@ Game.prototype.setup = function (setup) {
 
   // TODO min 10s? Math.max(10, Number(setup.wwtimeout) || 0)
   this.wwtimeout = Number(setup.wwtimeout) || 10
-  this.killTimeout = Number(setup.killTimeout) || 3000
-  this.endTimeout = Number(setup.endTimeout) || 4000
+  this.killTimeout = Number(setup.killTimeout) || 3
+  this.endTimeout = Number(setup.endTimeout) || 4
 
   this.limit = playersCnt
   this.players = []
@@ -128,8 +129,8 @@ Game.prototype.join = function (toJoin) {
     throw cliErr('invalidGame');
 
   const name = (toJoin.name || '').trim()
-  if (!this.limit) throw cliErr('setupReq');
-  if ((this.limit - this.players.length) <= 0) throw cliErr('limitReached');
+  if (!this.limit) throw cliErr('invalidGame');
+  if ((this.limit - this.players.length) <= 0) throw cliErr('gameLocked');
   if (!name) throw cliErr('nameReq');
   const found = this.players.filter((p) => p.name == name)
   if (found.length) throw cliErr('dupName');
@@ -266,7 +267,7 @@ Game.prototype.vote = function (vote) {
       //reset watchword after a execution
       var i = Math.round(Math.random() * (this.watchwords.length - 1))
       this.watchword = String(this.watchwords[i]).toLowerCase()
-      console.log('gameKilling', kill)
+      console.log('gameKilling', kill, won)
       // all death excluding new deaths
       let death = this.players.filter((p) => {
         return p.killed && !kill.some((k) => k.id == p.id)

@@ -14,60 +14,83 @@ const angular = require('angular')
 require('angular-route')
 require('ngtouch')
 require('angular-toggle-switch')
+require('angular-translate')
+require('angular-translate-loader-static-files')
 
-var app = angular.module('Werewolf', ["ngRoute", "ngTouch", "toggle-switch"]);
-app.config(function ($routeProvider) {
+String.prototype.sprintf = function () {
+  var args = arguments;
+  return this.replace(/{(\d+)}/g, function (match, number) {
+    return typeof args[number] != 'undefined' ? args[number] : match;
+  });
+};
+
+var app = angular.module('Werewolf', ['ngRoute', 'ngTouch', 'pascalprecht.translate', 'toggle-switch']);
+app.config(function ($routeProvider, $translateProvider) {
   $routeProvider
-    .when("/setup", {
-      templateUrl: "setup.htm"
-    }).when("/join", {
-      templateUrl: "join.htm"
+    .when('/setup', {
+      templateUrl: 'setup.htm'
+    }).when('/join', {
+      templateUrl: 'join.htm'
     })
-    .when("/watchword", {
-      templateUrl: "watchword.htm"
+    .when('/watchword', {
+      templateUrl: 'watchword.htm'
     })
-    .when("/poll", {
-      templateUrl: "poll.htm"
+    .when('/poll', {
+      templateUrl: 'poll.htm'
     })
-    .when("/gameOver/:winner", {
-      templateUrl: "gameOver.htm"
+    .when('/gameOver/:winner', {
+      templateUrl: 'gameOver.htm'
     })
+
+    $translateProvider.useStaticFilesLoader({
+      prefix: '/i18n/',
+      suffix: '.json'
+    })
+    $translateProvider.preferredLanguage('es');
 });
 
+app.filter('sprintf', function () {
+  return function () {
+    var theFormat = arguments[0]
+    return theFormat.sprintf ? theFormat.sprintf.apply(theFormat, Array.prototype.slice.call(arguments, 1)) : theFormat;
+  };
+})
+
 app.factory('socket', function ($rootScope, $window, $http, $location, $timeout) {
+
   $rootScope.myself = function (val) {
-    val && sessionStorage.setItem("myself", JSON.stringify(val));
-    const myself = JSON.parse(sessionStorage.getItem("myself") || "{}");
+    val && sessionStorage.setItem('myself', JSON.stringify(val));
+    const myself = JSON.parse(sessionStorage.getItem('myself') || '{}');
     return myself
   }
   $rootScope.whoIAm = function () {
-    return $http.get("whoiam", {
+    return $http.get('whoiam', {
       params: { id: $rootScope.myself().id }
     }).then(function (resp) {
-      console.log("whoiam", resp.data)
+      console.log('whoiam', resp.data)
       const myself = $rootScope.myself()
       $rootScope.myself(Object.assign(myself, resp.data))
       return $rootScope.myself()
     }).catch(function (err) {
       console.error(err)
-      $location.path("/setup")
+      $location.path('/setup')
     })
   }
 
-  $http.get("setup").then(function (resp) {
+  $http.get('setup').then(function (resp) {
     if (!resp.data.limit || !$rootScope.myself().id)
-      $location.path("/setup")
+      $location.path('/setup')
   }).catch(function (err) {
     $scope.error = err.data
   })
 
   var fs_socket = io()
   fs_socket.on('connect', function () {
-    console.log(" Connected to '/main'")
+    console.log('Connected to "/main"')
   })
 
   fs_socket.on('gameConfigured', function (msg) {
-    console.log("event gameConfigured:", msg)
+    console.log('event gameConfigured:', msg)
     $rootScope.myself({})
     $timeout(function () {
       $location.path('/join')
@@ -78,51 +101,51 @@ app.factory('socket', function ($rootScope, $window, $http, $location, $timeout)
   });
 
   fs_socket.on('gameLocked', function (msg) {
-    console.log("event gameLocked:", msg)
+    console.log('event gameLocked:', msg)
     $rootScope.$broadcast('gameLocked', msg)
   });
 
   fs_socket.on('watchwordReset', function (msg) {
-    console.log("event watchwordReset:", msg)
+    console.log('event watchwordReset:', msg)
     $rootScope.$broadcast('watchwordReset', msg)
   });
 
   fs_socket.on('gameWaiting', function (msg) {
-    console.log("event gameWaiting:", msg)
+    console.log('event gameWaiting:', msg)
     $rootScope.$broadcast('gameWaiting', msg)
   });
 
-  fs_socket.on("gameKilling", function (msg) {
-    console.log("event gameKilling:", msg)
-    $rootScope.$broadcast("gameKilling", msg)
+  fs_socket.on('gameKilling', function (msg) {
+    console.log('event gameKilling:', msg)
+    $rootScope.$broadcast('gameKilling', msg)
   });
 
-  fs_socket.on("gameWon", function (msg) {
-    console.log("event gameWon:", msg)
-    $rootScope.$broadcast("gameWon", msg)
+  fs_socket.on('gameWon', function (msg) {
+    console.log('event gameWon:', msg)
+    $rootScope.$broadcast('gameWon', msg)
   });
-  
-  fs_socket.on("endPeek", function (msg) {
-    console.log("event endPeek:", msg)
-    $rootScope.$broadcast("endPeek", msg)
+
+  fs_socket.on('endPeek', function (msg) {
+    console.log('event endPeek:', msg)
+    $rootScope.$broadcast('endPeek', msg)
   });
-  
-  fs_socket.on("gamePolling", function (msg) {
-    console.log("event gamePolling:", msg)
+
+  fs_socket.on('gamePolling', function (msg) {
+    console.log('event gamePolling:', msg)
     $timeout(function () {
-      $location.path("/poll")
+      $location.path('/poll')
     })
   });
 
-  fs_socket.on("gameVote", function (msg) {
-    console.log("event gameVote:", msg)
-    $rootScope.$broadcast("gameVote", msg)
+  fs_socket.on('gameVote', function (msg) {
+    console.log('event gameVote:', msg)
+    $rootScope.$broadcast('gameVote', msg)
   });
 
-  fs_socket.on("gameOver", function (msg) {
-    console.log("event gameOver:", msg)
-    $timeout(function(){
-      $location.path("/gameOver/"+msg)
+  fs_socket.on('gameOver', function (msg) {
+    console.log('event gameOver:', msg)
+    $timeout(function () {
+      $location.path('/gameOver/' + msg)
     })
   });
   return fs_socket;
