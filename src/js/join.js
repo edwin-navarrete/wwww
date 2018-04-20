@@ -37,22 +37,18 @@ angular.module('Werewolf')
             })
         }
 
-        $scope.$on('endPeek', function(ev, msg){
+        $scope.$on('gameKilling', function (ev, msg) {
+            $timeout(function () { $scope.$digest() }, 200)
+        })
+
+        $scope.$on('endPeek', function (ev, msg) {
             console.log('endPeek timer', msg)
             $scope.timer = msg.timeout
             var interval = setInterval(function () {
-              (--$scope.timer <= 0) && clearInterval(interval)
-              $scope.$digest()
+                (--$scope.timer <= 0) && clearInterval(interval)
+                $scope.$digest()
             }, 1000)
         })
-
-        $scope.$on('gamePolling', function (ev) {
-            var myself = $rootScope.myself()
-            myself.watchword = ""
-            $rootScope.myself(myself)
-            if(!myself.killed)
-                $location.path("/poll")
-        });
 
         $scope.visibleWW = false
         $scope.showW = function (val) {

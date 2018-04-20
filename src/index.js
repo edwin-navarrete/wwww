@@ -42,11 +42,11 @@ app.config(function ($routeProvider, $translateProvider) {
       templateUrl: 'gameOver.htm'
     })
 
-    $translateProvider.useStaticFilesLoader({
-      prefix: '/i18n/',
-      suffix: '.json'
-    })
-    $translateProvider.preferredLanguage('es');
+  $translateProvider.useStaticFilesLoader({
+    prefix: '/i18n/',
+    suffix: '.json'
+  })
+  $translateProvider.preferredLanguage('es');
 });
 
 app.filter('sprintf', function () {
@@ -117,6 +117,10 @@ app.factory('socket', function ($rootScope, $window, $http, $location, $timeout)
 
   fs_socket.on('gameKilling', function (msg) {
     console.log('event gameKilling:', msg)
+    var myself = $rootScope.myself()
+    myself.watchword = ""
+    $rootScope.myself(myself)
+
     $rootScope.$broadcast('gameKilling', msg)
   });
 
@@ -132,9 +136,11 @@ app.factory('socket', function ($rootScope, $window, $http, $location, $timeout)
 
   fs_socket.on('gamePolling', function (msg) {
     console.log('event gamePolling:', msg)
-    $timeout(function () {
-      $location.path('/poll')
-    })
+    if (!$rootScope.myself().killed) {
+      $timeout(function () {
+        $location.path('/poll')
+      })
+    }
   });
 
   fs_socket.on('gameVote', function (msg) {

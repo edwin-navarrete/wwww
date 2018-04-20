@@ -9,7 +9,7 @@
                 <p ng-if="waiting">{{ 'waitingPlayers' | translate | sprintf:(waiting) }}</p>
                 <p ng-if="waiting === 0">{{ 'waitingHint' | translate }}</p>
                 <p ng-if="myself().killed">{{ 'deathHint' | translate }}</p>
-                
+                <p ng-if="timer">{{ 'judgeHint' | translate | sprintf:(timer) }}</p>
                 <div class="btn-group " role="group">
                     <button type="submit" ng-click="readWW()" ng-show="myself().role && !myself().watchword" class="btn btn-primary">{{ 'watchwordBtn' | translate }}</button>
                     <button class="btn btn-primary" type="button" ng-mousedown="showRole(1)" ng-mouseleave="showRole(0)" ng-mouseup="showRole(0)"
