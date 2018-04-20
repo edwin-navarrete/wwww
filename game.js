@@ -98,9 +98,11 @@ Game.prototype.setup = function (setup) {
   this.endTimeout = Number(setup.endTimeout) || 4
 
   this.limit = playersCnt
+  // NOTE wwtimeout as a factor of alive players
+  this.wwtimeout = this.wwtimeout / this.limit
   this.players = []
   this.watchwords = watchwords
-  var i = Math.round(Math.random() * (watchwords.length - 1))
+  var i = Math.floor(Math.random() * watchwords.length)
   this.watchword = String(watchwords[i]).toLowerCase()
   // FIXME currently more than one werewolf is not supported yet
   if (playersCnt > 8) throw cliErr('notImplemented');
@@ -121,11 +123,8 @@ Game.prototype.setup = function (setup) {
 };
 
 Game.prototype.join = function (toJoin) {
-  if (this.werewolfs < 0)
-    throw cliErr('invalidGame');
-
   const name = (toJoin.name || '').trim()
-  if (!this.limit) throw cliErr('invalidGame');
+  if (!this.limit || this.werewolfs < 0) throw cliErr('invalidGame');
   const remaining = this.limit - this.players.length - 1
   if (remaining < 0) throw cliErr('gameLocked');
   if (!name) throw cliErr('nameReq');
@@ -145,7 +144,7 @@ Game.prototype.join = function (toJoin) {
       // Select the werewolfs randomly
       this.players.forEach((p) => p.role = 'villager');
       while (this.werewolfs > 0) {
-        var i = Math.round(Math.random() * (this.players.length - 1))
+        var i = Math.floor(Math.random() * this.players.length)
         let player = this.players[i];
         player.role != 'werewolf' && (player.role = 'werewolf') && this.werewolfs--
       }
@@ -208,12 +207,14 @@ Game.prototype.getWatchword = function (player) {
   let pendingPeek = this.players.reduce(
     (prev, cur) => cur.peek || cur.role == 'werewolf' || cur.killed ? prev - 1 : prev, this.limit)
   if (!pendingPeek) {
-    this.io.emit('endPeek', { timeout: this.wwtimeout })
-    // Reset peek watchword and start poll after some timeout
+    // Reset peek watchword and start poll after timeout depending on alive
+    var alive = this.players.reduce((t, p) => p.killed ? t : t + 1, 0)
+    const timeout = this.wwtimeout * alive * 1000
+    this.io.emit('endPeek', { timeout: timeout })
     setTimeout(() => {
       this.players.forEach((p) => delete p.peek)
       this.io.emit('gamePolling')
-    }, this.wwtimeout * 1000)
+    }, timeout)
   }
   return {
     watchword: this.watchword
@@ -261,8 +262,15 @@ Game.prototype.vote = function (vote) {
       const kill = Game.execution(this.players)
       const won = Game.gameOver(this.players)
       //reset watchword after a execution
-      var i = Math.round(Math.random() * (this.watchwords.length - 1))
-      this.watchword = String(this.watchwords[i]).toLowerCase()
+      var i = Math.floor(Math.random() * this.watchwords.length)
+
+      // NOTE reduce the watchwords for each round but leave at least 3 always
+      if (this.watchwords.length <= 3)
+        this.watchword = String(this.watchwords[i]).toLowerCase()
+      else
+        this.watchword = String(this.watchwords.splice(i, 1)[0]).toLowerCase()
+      console.log('watchword>>>>>>>>>>>>>>>>>>>>', this.watchwords, this.watchword);
+
       console.log('gameKilling', kill, won)
       // all death excluding new deaths
       let death = this.players.filter((p) => {
@@ -283,7 +291,7 @@ Game.prototype.vote = function (vote) {
     else {
       this.players.forEach((p) => {
         // Random chosen!
-        var i = Math.round(Math.random() * (this.players.length - 1))
+        var i = Math.floor(Math.random() * this.players.length)
         if (!p.killed && p.role != 'werewolf' && p.socket)
           io.to(`#${p.socket}`).emit('wwVote', { chosen: this.players[i].id })
       })

@@ -46,7 +46,7 @@ describe("WereWord", function () {
   it("rejects invalid setup", function () {
     function bindSetup(setupOveride) {
       var newSetup = Object.assign({}, baseSetup, setupOveride)
-      return game.setup.bind(game, newSetup); 
+      return game.setup.bind(game, newSetup);
     }
     // missing players
     expect(bindSetup({ players: 0 })).toThrow(new Error('playersReq'))
@@ -165,7 +165,7 @@ describe("WereWord", function () {
     (function pollingRound() {
       var villagers = game.players.filter((p) => p.role == 'villager' && !p.killed)
       var alive = game.players.filter((p) => !p.killed)
-      alive.forEach((p) => game.vote({ id: p.id, chosen: villagers[Math.round(Math.random() * (villagers.length - 1))].id }))
+      alive.forEach((p) => game.vote({ id: p.id, chosen: villagers[Math.floor(Math.random() * villagers.length)].id }))
       server.once('gameKilling', (resp) => {
         console.log(resp);
         expect(resp.chosen.some((p) => p.role == 'werewolf')).toBeFalsy()
@@ -178,6 +178,40 @@ describe("WereWord", function () {
           })
         }
       })
+    })();
+  })
+
+  it("round sequence with read watchword", function (done) {
+    game.setup(baseSetup)
+    for (i = 0; i < baseSetup.players; i++)
+      game.join({ name: 'Player' + i });
+
+    var curTimeout = baseSetup.wwtimeout * 1000 + 1;
+    (function pollingRound() {
+      //  all living villagers read watchword, eventually endPeek and gamePolling
+      var villagers = game.players.filter((p) => p.role == 'villager' && !p.killed)
+      server.once('endPeek', (resp) => {
+        // waiting time is decreasing
+        expect(resp.timeout).toBeLessThan(curTimeout)
+        curTimeout = resp.timeout;
+        server.once('gamePolling', () => {
+          var alive = game.players.filter((p) => !p.killed)
+          alive.forEach((p) => game.vote({ id: p.id, chosen: villagers[Math.floor(Math.random() * villagers.length)].id }))
+          server.once('gameKilling', (resp) => {
+            console.log(resp);
+            expect(resp.chosen.some((p) => p.role == 'werewolf')).toBeFalsy()
+            if (villagers.length > 2)
+              pollingRound()
+            else {
+              server.once('gameOver', (resp) => {
+                expect(resp).toBe('werewolf')
+                done()
+              })
+            }
+          })
+        })
+      })
+      villagers.forEach((p) => game.getWatchword(p.id))
     })();
   })
 
