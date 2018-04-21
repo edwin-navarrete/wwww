@@ -25,12 +25,16 @@ String.prototype.sprintf = function () {
   });
 };
 
-var app = angular.module('Werewolf', ['ngRoute', 'ngTouch','ngCookies', 'pascalprecht.translate', 'toggle-switch']);
+var app = angular.module('Werewolf', ['ngRoute', 'ngTouch', 'ngCookies', 'pascalprecht.translate', 'toggle-switch']);
 app.config(function ($routeProvider, $translateProvider) {
   $routeProvider
     .when('/setup', {
       templateUrl: 'setup.htm'
-    }).when('/join', {
+    })
+    .when('/guide', {
+      templateUrl: 'guide.htm'
+    })
+    .when('/join', {
       templateUrl: 'join.htm'
     })
     .when('/watchword', {

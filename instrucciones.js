@@ -1,0 +1,23 @@
+
+HISTORIA 
+
+Cuenta la leyenda que en una lejana aldea hombres lobo devoraban una víctima cada noche. De día lo único que los delataba es que no sabían leer. Por eso para exterminarlos los aldeanos encontraron un método: en reunión acordaban un grupo de contraseñas y diariamente publicaban una constraseña elegida secretamente. Luego entre ellos se interrogan pidiendo una palabra clave a cada aldeano de tal modo que demostrase conocer la contraseña secreta. Aquellos que no fuesen convincentes con su palabra clave serían sospechosos y por votación serían sacrificados. Los lobos sin embargo son muy astutos y confunden a los aldeanos al conocer la lista y escuchar las respuestas de los otros aldeanos. Mientras tanto ellos seguirán devorando más víctimas. Podrán los lobos evadir a los aldeanos hasta desolar la aldea o los aldeanos exterminarán a los lobos a tiempo? especialmente si las almas de los muertos envían sus señales desde el más allá!
+
+INICIO DEL JUEGO
+
+Antes de empezar el juego todos los jugadores deben conectarse al juego. Cualquiera puede configurarlo. Para configurarlo escribe el número de jugadores que ingresarán en el juego (máximo el número de jugadores conectados), el tiempo límite total del interrogatorio de contraseña para la primera ronda en segundos. Luego si lo deseas escoge una categoria de contraseñas predefinida o escribe una nueva lista acordada por todos. Se recomienda tener al menos tantas contraseñas como jugadores más tres. Lee en voz alta la lista configurada para que todos la conozcan de antemano y estén de acuerdo. Ajústala si es necesario. Al iniciar el juego cada jugador debe unirse al juego escribiendo su nombre. Cuando todos hayan ingresado, podrán leer furtivamente la contraseña secreta y su role ambos seleccionados automáticamente por el juego. Los lobos no podrán leer la contraseña, sólo verán garabatos, pero si no intentan leer la contraseña no podrán ver la lista completa de contraseñas y estarán en desventaja. 
+
+RONDA DEL JUEGO
+
+Cuando todos los aldeanos hayan visto la contraseña, empieza el tiempo de interrogatorio, el cual se irá reduciendo a medida que hayan menos personas vivas. Durante el tiempo de interrogatorio de contraseñas todos aquellos que aún siguen vivos y que decidieron leer la contraseña secreta podrán ver la lista de contraseñas completa (que incluye la palabra secreta) para analizar cómo confundir al lobo o bien para que el lobo intente determinar cuál es la verdadera contraseña. Si continuas vivo, en tu turno debes decir una palabra clave cualquiera relacionada con la contraseña de modo que los demás aldeanos sepan que tú conoces la contraseña pero de tal manera que los lobos no tenga tanta información como para determinar cuál es la contraseña secreta. Las contraseñas se renuevan en cada ronda y nunca se van a repetir salvo que queden tan sólo tres disponibles, de modo que en cada ronda hay cada vez menos contraseñas disponibles. Una vez termine el tiempo de interrogatorio, se detiene la ronda de palabras clave sin importar si faltaron personas para completar la ronda. Luego se pasa al tiempo de deliberar a quién hay que sacrificar. Se puede discutir abiertamente, y cuando haya una decisión todos votan por su víctima eligida. Cuando todos han votado, la víctima con mayor número de votos es sacrificada al igual que la víctima escogida por los lobos. Las víctimas podrán revelar entonces sus roles a los demás, no podrán hablar por el resto del juego, sin embargo recibirán de todas formas las contraseñas secretas generadas en cada ronda de modo que podrían ayudar a su equipo con señas desde el más allá como golpes en la mesa ó señales con las manos.
+
+FIN DEL JUEGO
+
+Si los aldeanos matan a todos los lobos, ganan. Si quedan tantos lobos como aldeanos vivos, ganan los lobos.
+
+
+
+Villa de pascua
+
+Once upon a time, in a remote village were werewolves devouring a victim every night. By day the only thing that betrayed them is that they could not read. For that reason to exterminate them the villagers found a method: in meeting they agreed a group of passwords and daily they published a secretly chosen watchword. Then they interrogate each other by asking a keyword to each villager in such a way as to demonstrate the secret watchword. Those who were not convincing with their keyword would be suspicious and by vote would be sacrificed. The wolves, however, are very clever and confuse the villagers by knowing the list and listening to the responses of the other villagers. Meanwhile they will continue to devour more victims. Will the wolves evade the villagers to desolate the village or will the villagers exterminate the wolves in time? especially if the souls of the dead send their signals from the beyond!
+

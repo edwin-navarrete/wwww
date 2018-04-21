@@ -1,5 +1,6 @@
 const config = {
     entry: ['./src/index.js'
+        , './src/js/Guide.js'
         , './src/js/Setup.js'
         , './src/js/gameOver.js'
         , './src/js/join.js'
