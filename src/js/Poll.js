@@ -2,7 +2,7 @@ angular.module('Werewolf')
     .controller('Poll', function ($rootScope, $scope, $http, $timeout, $location, socket) {
         $scope.players = []
         const myself = $rootScope.myself()
-        $rootScope.myself(Object.assign(myself, { watchword: null }))
+        $rootScope.myself(Object.assign(myself, { watchword: null, chosen: null }))
 
         $rootScope.waiting = null
         if ($rootScope.myself().id) {
