@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "angular-bootstrap-toggle-switch": "^1.1.0",
+    "angular-cookies": "^1.6.10",
     "angular-route": "^1.6.9",
     "angular-toggle-switch": "^1.3.0",
     "angular-translate": "^2.17.1",

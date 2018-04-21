@@ -1,5 +1,16 @@
 angular.module('Werewolf')
-  .controller('Setup', function ($rootScope, $scope, $http, $timeout, $location, socket) {
+  .controller('Setup', function ($rootScope, $scope, $http, $timeout, $location, $translate, $cookies, socket) {
+    var lng = $cookies.get('langPref') || 'es'
+    $translate.use(lng)
+    console.log('Cur Lang', lng);
+    $scope.langLbl = (lng === 'en') ? 'Español' : 'English'
+
+    $scope.changeLang = function () {
+      var lang = $translate.use() === 'en'? 'es':'en'
+      $scope.langLbl = lang == 'en' ? 'Español' : 'English'
+      $translate.use(lang)
+      $cookies.put('langPref', lang)
+    }
 
     $rootScope.waiting = null
     $scope.players = 4

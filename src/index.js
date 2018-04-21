@@ -13,6 +13,7 @@ const io = require('socket.io-client')
 const angular = require('angular')
 require('angular-route')
 require('ngtouch')
+require('angular-cookies')
 require('angular-toggle-switch')
 require('angular-translate')
 require('angular-translate-loader-static-files')
@@ -24,7 +25,7 @@ String.prototype.sprintf = function () {
   });
 };
 
-var app = angular.module('Werewolf', ['ngRoute', 'ngTouch', 'pascalprecht.translate', 'toggle-switch']);
+var app = angular.module('Werewolf', ['ngRoute', 'ngTouch','ngCookies', 'pascalprecht.translate', 'toggle-switch']);
 app.config(function ($routeProvider, $translateProvider) {
   $routeProvider
     .when('/setup', {
