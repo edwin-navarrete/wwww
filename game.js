@@ -201,6 +201,7 @@ Game.prototype.getWatchword = function (player) {
         length: 20,
         charset: ' abcdefghijk lmnopqrst uvwxyz'
       }).trim()
+      , watchwords: this.watchwords
     };
   }
   found[0].peek = true
@@ -217,7 +218,7 @@ Game.prototype.getWatchword = function (player) {
     }, timeout)
   }
   return {
-    watchword: this.watchword
+    watchword: this.watchword, watchwords: this.watchwords
   }
 }
 
@@ -262,14 +263,13 @@ Game.prototype.vote = function (vote) {
       const kill = Game.execution(this.players)
       const won = Game.gameOver(this.players)
       //reset watchword after a execution
-      var i = Math.floor(Math.random() * this.watchwords.length)
 
       // NOTE reduce the watchwords for each round but leave at least 3 always
-      if (this.watchwords.length <= 3)
-        this.watchword = String(this.watchwords[i]).toLowerCase()
-      else
-        this.watchword = String(this.watchwords.splice(i, 1)[0]).toLowerCase()
-      console.log('watchword>>>>>>>>>>>>>>>>>>>>', this.watchwords, this.watchword);
+      const curWW = this.watchword
+      if (this.watchwords.length > 3 && curWW)
+        this.watchwords = this.watchwords.filter((p) => String(p).toLowerCase() != curWW)
+      const i = Math.floor(Math.random() * this.watchwords.length)
+      this.watchword = String(this.watchwords[i]).toLowerCase()
 
       console.log('gameKilling', kill, won)
       // all death excluding new deaths

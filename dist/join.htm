@@ -2,7 +2,8 @@
     <div class="container">
         <ng-form name="joinFrm">
             <div class="form-group">
-                <input type="text" ng-disabled="joined" required placeholder="{{ 'nameHld' | translate }}" ng-model="name" class="form-control" id="name">
+                <input type="text" ng-disabled="joined" required placeholder="{{ 'nameHld' | translate }}" ng-model="name" class="form-control"
+                    id="name">
             </div>
             <div class="text-center">
                 <button type="submit" ng-hide="joined || !joinFrm.$valid" ng-click="joinNow()" class="btn btn-lg btn-primary">{{ 'joinBtn' | translate }}</button>
@@ -23,15 +24,29 @@
                             ng-touchend="showW(0)">
                             <i class="fa fa-eye"></i>
                         </button>
-                </div>                
+                </div>
                 <img ng-show="visibleRole && myself().role == 'villager' " src="img/villager.jpg" style="width: 100%;">
                 <img ng-show="visibleRole && myself().role == 'werewolf'" src="img/werewolf.jpg" style="width: 100%;">
-                <img ng-hide="visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
+                <img ng-hide="timer || visibleRole || myself().killed" src="img/unknown.jpg" style="width: 100%;">
                 <img ng-show="!visibleRole && myself().killed" src="img/death.png" style="width: 100%;">
-
+                <ul ng-show="timer" class="list-group">
+                    <li class="wwhdr list-group-item">{{ 'watchwordsTtl' | translate }}</li>
+                    <li ng-repeat="w in watchwords" class="wwlist list-group-item">{{w}}</li>
+                </ul>
             </div>
         </ng-form>
         <p>{{error}}</p>
     </div>
 </div>
+<style>
+    .wwhdr {
+        background-color: burlywood;
+        color: darkslateblue;
+    }
+
+    .wwlist {
+        color: burlywood;
+        background-color: darkslateblue;
+    }
+</style>
 <!--  center-block -->

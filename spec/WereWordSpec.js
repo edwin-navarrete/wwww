@@ -33,7 +33,7 @@ var game = new Game(server);
 describe("WereWord", function () {
   var baseSetup = {
     players: 8,
-    watchwords: ['A', 'E', 'B', 'C', 'A', 'D', 'E'],
+    watchwords: ['A', 'E', 'B', 'C', 'A', 'D', 'e', 'F'],
     wwtimeout: .2,
     killTimeout: .2,
     endTimeout: .2,
@@ -59,14 +59,21 @@ describe("WereWord", function () {
   it("manages watchwords", function () {
     game.setup(baseSetup)
     // removes duplicates?
-    expect(game.watchwords.length).toBe(5);
+    expect(game.watchwords.length).toBe(6);
     // choose watchword?
     expect(game.watchwords.indexOf(game.watchword)).toBeGreaterThan(-1)
+
+    for (i = 0; i < baseSetup.players; i++)
+      game.join({ name: 'Player' + i })
+
     // werewolf cannot see watchword?
     game.players.forEach((p) => {
-      var ww = game.watchword(p).watchword
-      if (p.role == 'werewolf') {
-        expect(game.watchwords.indexOf(ww)).toBe(-1)
+      var ww = game.getWatchword(p.id)
+      if (p.role == 'werewolf')
+        expect(game.watchwords.indexOf(ww.watchword)).toBe(-1)
+      else {
+        expect(game.watchwords.indexOf(ww.watchword)).not.toBe(-1)
+        expect(ww.watchwords.indexOf(ww.watchword)).not.toBe(-1)
       }
     })
   });
@@ -187,12 +194,17 @@ describe("WereWord", function () {
       game.join({ name: 'Player' + i });
 
     var curTimeout = baseSetup.wwtimeout * 1000 + 1;
+    var curWatchw = game.watchwords.length + 1;
     (function pollingRound() {
       //  all living villagers read watchword, eventually endPeek and gamePolling
       var villagers = game.players.filter((p) => p.role == 'villager' && !p.killed)
       server.once('endPeek', (resp) => {
         // waiting time is decreasing
         expect(resp.timeout).toBeLessThan(curTimeout)
+        // watchwords are decreasing
+        expect(game.watchwords.length).toBeLessThan(curWatchw)
+        expect(game.watchwords.length).toBeGreaterThan(2)
+        curWatchw = Math.max(4, game.watchwords.length)
         curTimeout = resp.timeout;
         server.once('gamePolling', () => {
           var alive = game.players.filter((p) => !p.killed)
@@ -211,7 +223,10 @@ describe("WereWord", function () {
           })
         })
       })
-      villagers.forEach((p) => game.getWatchword(p.id))
+      villagers.forEach((p) => {
+        const wws = game.getWatchword(p.id)
+        expect(wws.watchwords.indexOf(wws.watchword)).toBeGreaterThan(-1)
+      })
     })();
   })
 

@@ -31,6 +31,7 @@ angular.module('Werewolf')
                 var myself = $rootScope.myself()
                 myself.watchword = resp.data.watchword
                 myself.watchword = myself.watchword.rpad(' ', 50)
+                $scope.watchwords = resp.data.watchwords
                 $rootScope.myself(myself)
             }).catch(function (err) {
                 $scope.error = err.data
@@ -43,7 +44,7 @@ angular.module('Werewolf')
 
         $scope.$on('endPeek', function (ev, msg) {
             console.log('endPeek timer', msg)
-            $scope.timer = msg.timeout
+            $scope.timer = Math.floor(msg.timeout / 1000)
             var interval = setInterval(function () {
                 (--$scope.timer <= 0) && clearInterval(interval)
                 $scope.$digest()
